@@ -6,7 +6,7 @@ import {
 
 export const sidebarData = {
   user: {
-    name: 'Demo User',
+    name: 'Guest User',
     role: 'Farmer',
     initials: 'DU'
   },
