@@ -13,8 +13,6 @@ const LoginPage = () => {
       navigate('/dashboard');
     } else if (userType === 'Buyer') {
       navigate('/buyer-dashboard');
-    } else if (userType === 'Admin') {
-      navigate('/admin-dashboard');
     }
   };
 
@@ -61,7 +59,7 @@ const LoginPage = () => {
 
           {/* User Type Toggles */}
           <div className="flex space-x-3 mb-8">
-            {['Farmer', 'Buyer', 'Admin'].map((type) => (
+            {['Farmer', 'Buyer'].map((type) => (
               <button
                 key={type}
                 onClick={() => setUserType(type)}

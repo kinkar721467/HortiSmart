@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+@theme {
+  --font-sans: 'Outfit', sans-serif;
+}
+
+* {
+  font-family: 'Outfit', sans-serif;
+}
+
 @layer utilities {
   @keyframes marquee {
     0% { transform: translateX(100%); }

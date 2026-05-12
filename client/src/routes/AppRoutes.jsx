@@ -12,6 +12,7 @@ import ValueAdditionPage from '../pages/ValueAdditionPage';
 import PlaceholderPage from '../pages/PlaceholderPage';
 import LoginPage from '../pages/LoginPage';
 import SignupPage from '../pages/SignupPage';
+import AIChatbotPage from '../pages/AIChatbotPage';
 
 const AppRoutes = () => {
   return (
@@ -29,7 +30,7 @@ const AppRoutes = () => {
       <Route path="/marketplace" element={<MainLayout><MarketplacePage /></MainLayout>} />
       <Route path="/storage-finder" element={<MainLayout><StorageFinderPage /></MainLayout>} />
       <Route path="/value-addition" element={<MainLayout><ValueAdditionPage /></MainLayout>} />
-      <Route path="/notifications" element={<MainLayout><PlaceholderPage title="Notifications" /></MainLayout>} />
+      <Route path="/chat" element={<MainLayout><AIChatbotPage /></MainLayout>} />
       <Route path="/settings" element={<MainLayout><PlaceholderPage title="Settings" /></MainLayout>} />
       <Route path="*" element={<MainLayout><PlaceholderPage title="Page Not Found" /></MainLayout>} />
     </Routes>
