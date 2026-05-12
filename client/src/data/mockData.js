@@ -220,3 +220,100 @@ export const valueAdditionCrops = [
   { name: 'Spinach', count: '2 products', icon: '🥬' },
 ];
 
+export const valueAdditionTutorials = {
+  'Tomato': [
+    {
+      title: "Tomato Ketchup & Sauce",
+      description: "Learn the commercial process of making high-quality tomato ketchup and sauce. Highly profitable with long shelf life.",
+      articles: [
+        { title: "Recipe & Preservatives Guide", link: "#" },
+        { title: "FSSAI Licensing for Sauces", link: "#" }
+      ],
+      videos: [
+        { title: "Commercial Ketchup Making Process", duration: "12:45", id: "ketchup-video-1" }
+      ]
+    },
+    {
+      title: "Sun-Dried Tomatoes",
+      description: "A premium product with high export demand. Easy to make with basic dehydrators or sun drying methods.",
+      articles: [
+        { title: "Best Dehydrators for Farmers", link: "#" },
+        { title: "Packaging for Export", link: "#" }
+      ],
+      videos: [
+        { title: "How to Make Sun-Dried Tomatoes", duration: "08:20", id: "sundried-video-1" }
+      ]
+    }
+  ],
+  'Mango': [
+    {
+      title: "Mango Pickle Processing",
+      description: "Traditional and commercial mango pickle making techniques. Huge domestic market.",
+      articles: [
+        { title: "Commercial Pickle Recipes", link: "#" },
+        { title: "Packaging and Shelf Life", link: "#" }
+      ],
+      videos: [
+        { title: "Aachar Making Business", duration: "15:30", id: "mango-pickle-video" }
+      ]
+    },
+    {
+      title: "Mango Pulp Extraction",
+      description: "Process of extracting and canning mango pulp for off-season sales.",
+      articles: [
+        { title: "Machinery for Pulp Extraction", link: "#" }
+      ],
+      videos: [
+        { title: "Mango Pulp Processing Plant", duration: "10:15", id: "mango-pulp-video" }
+      ]
+    }
+  ],
+  'Potato': [
+    {
+      title: "Potato Chips Manufacturing",
+      description: "Step-by-step guide to setting up a small-scale potato chips manufacturing unit.",
+      articles: [
+        { title: "Cost & Profit Analysis", link: "#" },
+        { title: "Choosing the Right Potato Variety", link: "#" }
+      ],
+      videos: [
+        { title: "Small Scale Chips Factory Setup", duration: "18:20", id: "potato-chips-video" }
+      ]
+    },
+    {
+      title: "Potato Powder & Starch",
+      description: "Creating potato powder for bakeries and commercial food industries.",
+      articles: [
+        { title: "Starch Extraction Process", link: "#" }
+      ],
+      videos: [
+        { title: "Making Potato Flour at Home/Farm", duration: "09:45", id: "potato-flour-video" }
+      ]
+    }
+  ],
+  'Onion': [
+    {
+      title: "Dehydrated Onion Flakes",
+      description: "Making dehydrated onion flakes and powder to prevent post-harvest losses.",
+      articles: [
+        { title: "Onion Dehydration Business Plan", link: "#" },
+        { title: "Machinery Required", link: "#" }
+      ],
+      videos: [
+        { title: "Dehydrated Onion Processing", duration: "11:10", id: "onion-flake-video" }
+      ]
+    }
+  ],
+  'Spinach': [
+    {
+      title: "Spinach Powder",
+      description: "Highly nutritious spinach powder used in supplements, pastas, and baked goods.",
+      articles: [
+        { title: "Green Leaf Dehydration Techniques", link: "#" }
+      ],
+      videos: [
+        { title: "Making Spinach Powder", duration: "07:30", id: "spinach-powder-video" }
+      ]
+    }
+  ]
+};
