@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Navbar from '../components/Navbar';
+import { Bot } from 'lucide-react';
 
 const MainLayout = ({ children }) => {
   // By default minimized as requested
-  const [isSidebarMinimized, setIsSidebarMinimized] = useState(true);
+  const [isSidebarMinimized, setIsSidebarMinimized] = useState(false);
   
   // Also we might want to handle mobile sidebar (drawer)
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
@@ -53,6 +55,15 @@ const MainLayout = ({ children }) => {
           {children}
         </main>
       </div>
+
+      {/* Floating AI Chat Button */}
+      <Link to="/chat" className="fixed bottom-6 right-6 z-50 flex items-center bg-[#2e7d32] text-white p-3.5 rounded-full shadow-lg hover:bg-green-700 hover:shadow-xl transition-all duration-300 hover:scale-105 group">
+        <Bot className="w-6 h-6" />
+        <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 ease-in-out whitespace-nowrap font-medium px-0 group-hover:px-2 text-sm">
+          Chat with AI
+        </span>
+        <span className="absolute top-0 right-0 h-3.5 w-3.5 rounded-full bg-green-400 border-2 border-[#2e7d32] animate-pulse"></span>
+      </Link>
     </div>
   );
 };

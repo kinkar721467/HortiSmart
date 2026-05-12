@@ -1,8 +1,16 @@
-import React from 'react';
-import { Search, MapPin, Star, Building2, Map } from 'lucide-react';
+import React, { useState } from 'react';
+import { MapPin, Star, Building2, Map } from 'lucide-react';
 import { storageFacilities } from '../data/mockData';
 
 const StorageFinderPage = () => {
+  const [selectedState, setSelectedState] = useState('All States');
+
+  const filteredFacilities = storageFacilities.filter(facility => {
+    if (selectedState === 'All States') return true;
+    if (selectedState === 'Haryana' && facility.location.includes('HR')) return true;
+    return facility.location.toLowerCase().includes(selectedState.toLowerCase());
+  });
+
   return (
     <div className="max-w-7xl mx-auto space-y-6">
       <div className="mb-6">
@@ -10,28 +18,41 @@ const StorageFinderPage = () => {
         <p className="text-gray-500 mt-1">Find nearby cold storage facilities for your produce</p>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-4 mb-6">
-        <div className="relative flex-1">
-          <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-            <Search className="h-5 w-5 text-gray-400" />
-          </span>
-          <input
-            type="text"
-            className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-            placeholder="Search by name or location..."
-          />
+      <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 mb-6 flex flex-col md:flex-row gap-4 items-end">
+        <div className="flex-1 w-full">
+          <label className="block text-sm font-medium text-gray-700 mb-2">Filter by State</label>
+          <div className="relative">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+              <MapPin className="h-5 w-5 text-green-500" />
+            </span>
+            <select
+              value={selectedState}
+              onChange={(e) => setSelectedState(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white appearance-none"
+            >
+              <option value="All States">All States</option>
+              <option value="Uttar Pradesh">Uttar Pradesh</option>
+              <option value="Punjab">Punjab</option>
+              <option value="Haryana">Haryana</option>
+              <option value="Maharashtra">Maharashtra</option>
+              <option value="Karnataka">Karnataka</option>
+              <option value="Delhi">Delhi</option>
+            </select>
+            <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+            </div>
+          </div>
         </div>
-        <button className="flex items-center justify-center space-x-2 bg-white border border-green-500 text-green-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-50">
-          <MapPin className="w-4 h-4" />
-          <span>Use My Location</span>
-        </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Side: List */}
-        <div className="lg:col-span-2 space-y-4">
-          {storageFacilities.map((facility, idx) => (
-            <div key={idx} className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
+      <div className="space-y-4">
+          {filteredFacilities.length === 0 ? (
+            <div className="bg-white border border-gray-200 rounded-xl p-8 text-center text-gray-500 shadow-sm">
+              No storage facilities found in {selectedState}. Try selecting another state.
+            </div>
+          ) : (
+            filteredFacilities.map((facility, idx) => (
+              <div key={idx} className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
               <div className="flex justify-between items-start mb-4">
                 <div className="flex items-start space-x-4">
                   <div className="bg-green-50 p-3 rounded-lg text-green-600 shrink-0">
@@ -89,33 +110,10 @@ const StorageFinderPage = () => {
                   View Details
                 </button>
               </div>
-            </div>
-          ))}
+              </div>
+            ))
+          )}
         </div>
-
-        {/* Right Side: Map View Dummy */}
-        <div className="lg:col-span-1">
-          <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm h-[600px] flex flex-col">
-            <h3 className="text-sm font-semibold text-gray-800 mb-4">Map View</h3>
-            <div className="bg-green-50 rounded-lg flex-1 flex flex-col items-center justify-center border border-green-100 relative">
-              <Map className="w-12 h-12 text-green-300 mb-2" />
-              <p className="text-green-700 font-medium text-sm">Map Integration</p>
-              <p className="text-green-600/70 text-xs">Showing 4 locations</p>
-              
-              {/* Dummy Map Pins */}
-              <div className="absolute top-1/4 left-1/4">
-                <MapPin className="w-6 h-6 text-green-600 fill-white drop-shadow-md" />
-              </div>
-              <div className="absolute top-1/2 right-1/3">
-                <MapPin className="w-6 h-6 text-green-600 fill-white drop-shadow-md" />
-              </div>
-              <div className="absolute bottom-1/3 left-1/3">
-                <MapPin className="w-6 h-6 text-orange-500 fill-white drop-shadow-md" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

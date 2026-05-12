@@ -1,7 +1,7 @@
 import { 
   LayoutDashboard, IndianRupee, ShoppingBag, 
   MapPin, PackagePlus, Bell, Settings, LogOut,
-  TrendingUp, Database, ArrowUpRight, Users
+  TrendingUp, Database, ArrowUpRight, Users, Bot
 } from 'lucide-react';
 
 export const sidebarData = {
@@ -16,7 +16,7 @@ export const sidebarData = {
     { name: 'Marketplace', icon: ShoppingBag, path: '/marketplace' },
     { name: 'Storage Finder', icon: MapPin, path: '/storage-finder' },
     { name: 'Value Addition', icon: PackagePlus, path: '/value-addition' },
-    { name: 'Notifications', icon: Bell, badge: 2, path: '/notifications' },
+    { name: 'AI Chat Bot', icon: Bot, path: '/chat' },
   ],
   bottomItems: [
     { name: 'Settings', icon: Settings, path: '/settings' },

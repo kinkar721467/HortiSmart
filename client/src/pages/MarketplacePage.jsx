@@ -3,11 +3,14 @@ import { Search, Filter, ShoppingCart, Star, Plus, X, Package } from 'lucide-rea
 import { marketplaceProducts } from '../data/mockData';
 
 const MarketplacePage = () => {
-  // Role toggle: 'buyer' or 'farmer'
-  const [role, setRole] = useState('farmer');
+  // Get role from authentication
+  const role = (localStorage.getItem('userRole') || 'Buyer').toLowerCase();
+
   
   // Products state initialized with mock data
   const [products, setProducts] = useState(marketplaceProducts);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
   
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -42,6 +45,14 @@ const MarketplacePage = () => {
     });
   };
 
+  const filteredProducts = products.filter(product => {
+    const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
+    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          product.seller.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          (product.category && product.category.toLowerCase().includes(searchQuery.toLowerCase()));
+    return matchesCategory && matchesSearch;
+  });
+
   return (
     <div className="max-w-7xl mx-auto space-y-6 relative">
       {/* Header and Role Toggle */}
@@ -49,22 +60,6 @@ const MarketplacePage = () => {
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Marketplace</h1>
           <p className="text-gray-500 mt-1">Browse and buy fresh produce directly from farmers</p>
-        </div>
-        
-        {/* Role Toggle for demonstration */}
-        <div className="flex items-center space-x-2 bg-white p-1 rounded-lg border border-gray-200 shadow-sm">
-          <button 
-            onClick={() => setRole('buyer')}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${role === 'buyer' ? 'bg-green-100 text-green-700' : 'text-gray-500 hover:bg-gray-50'}`}
-          >
-            View as Buyer
-          </button>
-          <button 
-            onClick={() => setRole('farmer')}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${role === 'farmer' ? 'bg-green-100 text-green-700' : 'text-gray-500 hover:bg-gray-50'}`}
-          >
-            View as Farmer
-          </button>
         </div>
       </div>
 
@@ -75,6 +70,8 @@ const MarketplacePage = () => {
           </span>
           <input
             type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
             placeholder="Search products, farmers, or location..."
           />
@@ -90,33 +87,28 @@ const MarketplacePage = () => {
             <span>Add Product</span>
           </button>
         )}
-        
-        <div className="flex space-x-3">
-          <select className="border border-gray-200 rounded-lg text-sm px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-green-500 min-w-[120px]">
-            <option>Featured</option>
-            <option>Price: Low to High</option>
-            <option>Price: High to Low</option>
-            <option>Newest</option>
-          </select>
-          <button className="flex items-center justify-center space-x-2 bg-white border border-green-500 text-green-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-50 shrink-0">
-            <Filter className="w-4 h-4" />
-            <span>Filters</span>
-          </button>
-        </div>
       </div>
 
       {/* Category Pills */}
       <div className="flex space-x-2 overflow-x-auto pb-2 no-scrollbar mb-6">
-        <button className="px-4 py-1.5 bg-green-600 text-white text-sm font-medium rounded-full shrink-0">All</button>
-        <button className="px-4 py-1.5 bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 text-sm font-medium rounded-full shrink-0">Vegetables</button>
-        <button className="px-4 py-1.5 bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 text-sm font-medium rounded-full shrink-0">Leafy Greens</button>
-        <button className="px-4 py-1.5 bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 text-sm font-medium rounded-full shrink-0">Fruits</button>
-        <button className="px-4 py-1.5 bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 text-sm font-medium rounded-full shrink-0">Grains</button>
+        {['All', 'Vegetables', 'Leafy Greens', 'Fruits', 'Grains'].map(cat => (
+          <button 
+            key={cat}
+            onClick={() => setSelectedCategory(cat)}
+            className={`px-4 py-1.5 text-sm font-medium rounded-full shrink-0 transition-colors ${
+              selectedCategory === cat 
+                ? 'bg-green-600 text-white' 
+                : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
+            }`}
+          >
+            {cat}
+          </button>
+        ))}
       </div>
 
       {/* Product Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {products.map((product, idx) => (
+        {filteredProducts.map((product, idx) => (
           <div key={idx} className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow group flex flex-col">
             <div className="h-48 bg-[#f4f7f4] flex items-center justify-center relative">
               <span className="text-6xl group-hover:scale-110 transition-transform">{product.icon}</span>
@@ -175,10 +167,20 @@ const MarketplacePage = () => {
             </div>
             
             <form onSubmit={handleAddProduct} className="p-5 space-y-4">
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-gray-700">Product Name</label>
+                <input required type="text" value={newProduct.name} onChange={e => setNewProduct({...newProduct, name: e.target.value})} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 focus:outline-none" placeholder="e.g. Organic Carrots" />
+              </div>
+              
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-xs font-medium text-gray-700">Product Name</label>
-                  <input required type="text" value={newProduct.name} onChange={e => setNewProduct({...newProduct, name: e.target.value})} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 focus:outline-none" placeholder="e.g. Organic Carrots" />
+                  <label className="text-xs font-medium text-gray-700">Category</label>
+                  <select required value={newProduct.category} onChange={e => setNewProduct({...newProduct, category: e.target.value})} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 focus:outline-none bg-white">
+                    <option value="Vegetables">Vegetables</option>
+                    <option value="Leafy Greens">Leafy Greens</option>
+                    <option value="Fruits">Fruits</option>
+                    <option value="Grains">Grains</option>
+                  </select>
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs font-medium text-gray-700">Emoji / Icon</label>

@@ -16,7 +16,7 @@ const CropPricesPage = () => {
   // Fetch API
   useEffect(() => {
     fetchPrices();
-  }, [search, selectedState]);
+  }, [selectedState]);
 
   const fetchPrices = async () => {
     try {
@@ -57,7 +57,9 @@ const CropPricesPage = () => {
 
   // Convert quintal to kg
   const getKgPrice = (price) => {
-    return (Number(price) / 100).toFixed(2);
+    const num = Number(price);
+    if (isNaN(num) || !price) return "N/A";
+    return (num / 100).toFixed(2);
   };
 
   return (
@@ -75,18 +77,21 @@ const CropPricesPage = () => {
       </div>
 
       {/* Search + Filter */}
-      <div className="flex flex-col md:flex-row gap-4">
+      <form 
+        onSubmit={(e) => { e.preventDefault(); fetchPrices(); }} 
+        className="flex flex-col md:flex-row gap-4"
+      >
 
         {/* Search */}
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+          <Search className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
 
           <input
             type="text"
             placeholder="Search fruits or vegetables..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full border border-gray-200 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="w-full border border-gray-200 rounded-lg pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
           />
         </div>
 
@@ -94,7 +99,7 @@ const CropPricesPage = () => {
         <select
           value={selectedState}
           onChange={(e) => setSelectedState(e.target.value)}
-          className="border border-gray-200 rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
+          className="border border-gray-200 rounded-lg px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-green-500 min-w-[150px]"
         >
           <option value="">All States</option>
           <option value="Punjab">Punjab</option>
@@ -102,7 +107,15 @@ const CropPricesPage = () => {
           <option value="Gujarat">Gujarat</option>
           <option value="Maharashtra">Maharashtra</option>
         </select>
-      </div>
+
+        {/* Search Button */}
+        <button 
+          type="submit"
+          className="bg-[#2e7d32] hover:bg-green-700 text-white px-6 py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm whitespace-nowrap"
+        >
+          Search
+        </button>
+      </form>
 
       {/* Loading */}
       {loading && (
