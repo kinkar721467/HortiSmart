@@ -4,11 +4,13 @@ import StatCard from '../components/Dashboard/StatCard';
 import WeatherCard from '../components/Dashboard/WeatherCard';
 import CropPrices from '../components/Dashboard/CropPrices';
 import { TrendingUp, ShoppingBag, Database, IndianRupee } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const userName = localStorage.getItem('userName') || sessionStorage.getItem('userName') || 'Farmer';
   const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+  const { t } = useLanguage();
 
   const [stats, setStats] = useState({
     bestPrice: null,
@@ -79,44 +81,44 @@ const Dashboard = () => {
 
   const statCards = [
     {
-      title: "Today's Best Price",
+      title: t('messages.today_best_price'),
       value: stats.bestPrice?.price || '—',
       subtitle: stats.bestPrice?.name || 'Crop Market',
       trend: null,
-      trendLabel: 'View Prices →',
+      trendLabel: t('messages.view_prices'),
       icon: TrendingUp,
       iconBgColor: 'bg-green-50',
       iconColor: 'text-green-600',
       onClick: () => navigate('/prices'),
     },
     {
-      title: 'Products in Marketplace',
+      title: t('messages.products_marketplace'),
       value: stats.totalProducts !== null ? String(stats.totalProducts) : '—',
       subtitle: 'Total active listings',
       trend: null,
-      trendLabel: 'View Marketplace',
+      trendLabel: t('messages.view_marketplace'),
       icon: ShoppingBag,
       iconBgColor: 'bg-blue-50',
       iconColor: 'text-blue-600',
       onClick: () => navigate('/marketplace'),
     },
     {
-      title: 'Best Listed Price',
+      title: t('messages.best_listed_price'),
       value: stats.bestProductPrice?.price || '—',
       subtitle: stats.bestProductPrice?.name || 'Your listings',
       trend: null,
-      trendLabel: 'Manage Products',
+      trendLabel: t('messages.manage_products'),
       icon: IndianRupee,
       iconBgColor: 'bg-orange-50',
       iconColor: 'text-orange-500',
       onClick: () => navigate('/marketplace'),
     },
     {
-      title: 'Storage Available',
+      title: t('messages.storage_available'),
       value: stats.storageAvailable || '—',
       subtitle: 'Cold storage facilities',
       trend: null,
-      trendLabel: 'Find Storage',
+      trendLabel: t('messages.find_storage'),
       icon: Database,
       iconBgColor: 'bg-purple-50',
       iconColor: 'text-purple-600',
@@ -129,9 +131,9 @@ const Dashboard = () => {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
-          Welcome back, {userName}! 👋
+          {t('messages.welcome', { name: userName })}
         </h1>
-        <p className="text-gray-500 mt-1">Here's what's happening with your farm today.</p>
+        <p className="text-gray-500 mt-1">{t('messages.subtitle')}</p>
       </div>
 
       {/* Top Stats Row - All clickable */}

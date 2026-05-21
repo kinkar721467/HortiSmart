@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MapPin, Star, Building2, Map } from 'lucide-react';
+import { MapPin, Star, Building2, Map, Phone, Mail, User } from 'lucide-react';
 import { storageFacilities } from '../data/mockData';
 
 const StorageFinderPage = () => {
@@ -102,13 +102,19 @@ const StorageFinderPage = () => {
                 ))}
               </div>
 
-              <div className="flex items-center space-x-3">
-                <button className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition-colors">
-                  Contact
-                </button>
-                <button className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">
-                  View Details
-                </button>
+              <div className="mt-2 pt-4 border-t border-gray-100 dark:border-gray-800 flex flex-wrap items-center gap-y-2 gap-x-6 text-sm text-black dark:text-white">
+                <div className="flex items-center space-x-2">
+                  <User className="w-4 h-4 text-green-600 dark:text-green-400" />
+                  <span className="font-bold text-black dark:text-white">Owner: {facility.owner || 'Rajesh Yadav'}</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Phone className="w-4 h-4 text-green-600 dark:text-green-400" />
+                  <span className="font-bold text-black dark:text-white">{facility.phone || '+91 98765 01234'}</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Mail className="w-4 h-4 text-green-600 dark:text-green-400" />
+                  <span className="font-bold text-black dark:text-white">{facility.email || 'contact@storage.com'}</span>
+                </div>
               </div>
               </div>
             ))

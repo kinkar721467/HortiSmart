@@ -7,6 +7,19 @@ use App\Http\Controllers\AuthController;
 
 Route::get('/crop-prices', [CropPriceController::class, 'index']);
 
+// Translations endpoint
+Route::get('/translations/{locale}', function ($locale) {
+    if (!in_array($locale, ['en', 'hi', 'pa', 'bn'])) {
+        $locale = 'en';
+    }
+    
+    Illuminate\Support\Facades\App::setLocale($locale);
+    
+    return response()->json([
+        'messages' => __('messages'),
+    ]);
+});
+
 // Public routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
