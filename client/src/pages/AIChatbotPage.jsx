@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Sparkles, Image as ImageIcon, Paperclip, MoreVertical, ThumbsUp, ThumbsDown, Copy } from 'lucide-react';
+import { Send, Bot, User, Sparkles, MoreVertical, ThumbsUp, ThumbsDown, Copy, AlertTriangle } from 'lucide-react';
 
 const AIChatbotPage = () => {
   const [messages, setMessages] = useState([
@@ -12,7 +12,13 @@ const AIChatbotPage = () => {
   ]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const messagesEndRef = useRef(null);
+
+  const handleClearChat = () => {
+    setShowConfirmModal(true);
+  };
 
   const suggestedPrompts = [
     "🍅 Today's Tomato prices?",
@@ -29,7 +35,7 @@ const AIChatbotPage = () => {
     scrollToBottom();
   }, [messages, isTyping]);
 
-  const handleSend = (text) => {
+  const handleSend = async (text) => {
     if (!text.trim()) return;
 
     const newUserMsg = {
@@ -43,27 +49,47 @@ const AIChatbotPage = () => {
     setInputValue("");
     setIsTyping(true);
 
-    // Simulate AI response
-    setTimeout(() => {
+    try {
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+      const res = await fetch('http://127.0.0.1:8000/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ message: text })
+      });
+      
+      const data = await res.json();
+      
       setIsTyping(false);
       const aiResponse = {
         id: messages.length + 2,
         type: 'ai',
-        text: "That's a great question! Based on current market trends and agricultural best practices, I'd recommend checking the Crop Prices dashboard for localized data. Is there anything specific about soil health or pest management you'd like to know?",
+        text: res.ok ? data.reply : `Error: ${data.reply || 'Something went wrong.'}`,
         timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
       };
       setMessages(prev => [...prev, aiResponse]);
-    }, 2000);
+    } catch (err) {
+      setIsTyping(false);
+      setMessages(prev => [...prev, {
+        id: messages.length + 2,
+        type: 'ai',
+        text: 'Network error. Please make sure the backend is running.',
+        timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+      }]);
+    }
   };
 
   return (
     <div className="flex flex-col h-[calc(100vh-100px)] max-w-5xl mx-auto bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/50 overflow-hidden relative">
       
-      {/* Premium Chat Header */}
-      <div className="px-8 py-5 bg-gradient-to-r from-[#2e7d32] via-[#388e3c] to-[#1b5e20] text-white flex items-center justify-between shrink-0 shadow-lg z-10 relative overflow-hidden">
-        {/* Abstract background shapes */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-black opacity-10 rounded-full blur-2xl translate-y-1/2 -translate-x-1/4"></div>
+      <div className="px-8 py-5 bg-gradient-to-r from-[#2e7d32] via-[#388e3c] to-[#1b5e20] text-white flex items-center justify-between shrink-0 shadow-lg z-10 relative">
+        {/* Abstract background shapes container to prevent clipping the dropdown menu */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none rounded-t-3xl">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-black opacity-10 rounded-full blur-2xl translate-y-1/2 -translate-x-1/4"></div>
+        </div>
 
         <div className="flex items-center space-x-4 relative z-10">
           <div className="relative">
@@ -82,9 +108,29 @@ const AIChatbotPage = () => {
           </div>
         </div>
         
-        <button className="p-2 bg-white/10 hover:bg-white/20 rounded-full backdrop-blur-sm transition-all relative z-10">
-          <MoreVertical className="w-5 h-5 text-white" />
-        </button>
+        <div className="relative">
+          <button 
+            onClick={() => setShowMenu(!showMenu)}
+            className="p-2 bg-white/10 hover:bg-white/20 rounded-full backdrop-blur-sm transition-all relative z-10"
+            title="Options"
+          >
+            <MoreVertical className="w-5 h-5 text-white" />
+          </button>
+          
+          {showMenu && (
+            <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1.5 z-20">
+              <button
+                onClick={() => {
+                  handleClearChat();
+                  setShowMenu(false);
+                }}
+                className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors font-semibold flex items-center"
+              >
+                Clear all data
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Chat Messages */}
@@ -168,13 +214,6 @@ const AIChatbotPage = () => {
         <form onSubmit={(e) => { e.preventDefault(); handleSend(inputValue); }} className="relative group">
           <div className="absolute -inset-0.5 bg-gradient-to-r from-green-400 to-[#2e7d32] rounded-2xl blur opacity-20 group-focus-within:opacity-50 transition duration-500"></div>
           <div className="relative flex items-center bg-white p-2 rounded-xl shadow-inner border border-gray-200">
-            <button type="button" className="p-2.5 text-gray-400 hover:text-[#2e7d32] hover:bg-green-50 transition-colors rounded-xl">
-              <ImageIcon className="w-5 h-5" />
-            </button>
-            <button type="button" className="p-2.5 text-gray-400 hover:text-[#2e7d32] hover:bg-green-50 transition-colors rounded-xl">
-              <Paperclip className="w-5 h-5" />
-            </button>
-            
             <input
               type="text"
               value={inputValue}
@@ -200,6 +239,47 @@ const AIChatbotPage = () => {
           HortiSmart AI can make mistakes. Please verify important agricultural decisions.
         </p>
       </div>
+
+      {/* Custom Confirmation Modal */}
+      {showConfirmModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999] flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl shadow-2xl border border-gray-100 max-w-sm w-full overflow-hidden p-6 text-center animate-in zoom-in-95 duration-200">
+            <div className="w-12 h-12 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-red-100">
+              <AlertTriangle className="w-6 h-6 animate-pulse" />
+            </div>
+            <h3 className="text-lg font-bold text-gray-800 mb-2">
+              Are you sure you want to clear all data?
+            </h3>
+            <p className="text-sm text-gray-500 mb-6 font-medium">
+              This action cannot be undone.
+            </p>
+            <div className="flex space-x-3">
+              <button
+                onClick={() => setShowConfirmModal(false)}
+                className="flex-1 py-2.5 bg-gray-50 border border-gray-200 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-100 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  setMessages([
+                    {
+                      id: 1,
+                      type: 'ai',
+                      text: "Hello! I am HortiSmart AI, your personal agricultural assistant. I can help you with crop disease identification, real-time market prices, and farming best practices. How can I assist you today?",
+                      timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                    }
+                  ]);
+                  setShowConfirmModal(false);
+                }}
+                className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-xl transition-colors shadow-md shadow-red-200 cursor-pointer"
+              >
+                Clear Chat
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,18 +1,69 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Leaf, User, Mail, Phone, MapPin, Lock } from 'lucide-react';
+import { useToast } from '../context/ToastContext';
 
 const SignupPage = () => {
+  const { showToast } = useToast();
   const [userType, setUserType] = useState('Farmer');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [location, setLocation] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
-    localStorage.setItem('userRole', userType);
-    if (userType === 'Farmer') {
-      navigate('/dashboard');
-    } else if (userType === 'Buyer') {
-      navigate('/buyer-dashboard');
+    setError('');
+    
+    if (password !== confirmPassword) {
+      return setError('Passwords do not match');
+    }
+
+    setIsLoading(true);
+    
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          phone,
+          location,
+          password,
+          role: userType.toLowerCase()
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Registration failed');
+      }
+      
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('userRole', data.user.role);
+      localStorage.setItem('userName', data.user.name);
+      
+      showToast(`Welcome to HortiSmart, ${data.user.name}! Your account has been created.`, 'success');
+      
+      if (data.user.role === 'farmer') {
+        navigate('/dashboard');
+      } else {
+        navigate('/buyer-dashboard');
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -76,6 +127,11 @@ const SignupPage = () => {
 
           {/* Form */}
           <form className="space-y-4" onSubmit={handleSignup}>
+            {error && (
+              <div className="bg-red-50 text-red-500 p-3 rounded-lg text-sm text-center">
+                {error}
+              </div>
+            )}
             <div className="relative">
               <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                 <User className="w-5 h-5 text-gray-400" />
@@ -83,6 +139,8 @@ const SignupPage = () => {
               <input
                 type="text"
                 placeholder="Full name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
                 required
               />
@@ -95,6 +153,8 @@ const SignupPage = () => {
               <input
                 type="email"
                 placeholder="Email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
                 required
               />
@@ -107,6 +167,8 @@ const SignupPage = () => {
               <input
                 type="tel"
                 placeholder="Phone number"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
                 required
               />
@@ -119,6 +181,8 @@ const SignupPage = () => {
               <input
                 type="text"
                 placeholder="City, State"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
                 required
               />
@@ -131,6 +195,8 @@ const SignupPage = () => {
               <input
                 type="password"
                 placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
                 required
               />
@@ -143,6 +209,8 @@ const SignupPage = () => {
               <input
                 type="password"
                 placeholder="Confirm password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
                 required
               />
@@ -159,9 +227,10 @@ const SignupPage = () => {
 
             <button
               type="submit"
-              className="w-full bg-[#2e7d32] hover:bg-green-700 text-white font-medium py-3 rounded-lg transition-colors shadow-sm mt-2"
+              disabled={isLoading}
+              className="w-full bg-[#2e7d32] hover:bg-green-700 text-white font-medium py-3 rounded-lg transition-colors shadow-sm mt-2 disabled:opacity-50"
             >
-              Create Account
+              {isLoading ? 'Creating Account...' : 'Create Account'}
             </button>
           </form>
 

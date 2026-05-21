@@ -19,17 +19,16 @@ export const sidebarData = {
     { name: 'AI Chat Bot', icon: Bot, path: '/chat' },
   ],
   bottomItems: [
-    { name: 'Settings', icon: Settings, path: '/settings' },
     { name: 'Logout', icon: LogOut, path: '/' },
   ]
 };
 
 export const buyerMenuItems = [
   { name: 'Dashboard', icon: LayoutDashboard, path: '/buyer-dashboard' },
-  { name: 'Browse Crops', icon: ShoppingBag, path: '/buyer/marketplace' },
-  { name: 'My Orders', icon: PackagePlus, path: '/buyer/orders' },
-  { name: 'Saved Farmers', icon: Users, path: '/buyer/farmers' },
-  { name: 'Market Trends', icon: TrendingUp, path: '/buyer/trends' },
+  { name: 'Crop Prices', icon: IndianRupee, path: '/prices' },
+  { name: 'Marketplace', icon: ShoppingBag, path: '/marketplace' },
+  { name: 'My Cart', icon: PackagePlus, path: '/buyer/cart' },
+  { name: 'AI Chat Bot', icon: Bot, path: '/chat' },
 ];
 
 export const adminMenuItems = [
@@ -42,11 +41,9 @@ export const adminMenuItems = [
 
 export const buyerStats = [
   {
-    title: "Active Orders",
+    title: "Total Orders",
     value: "14",
-    subtitle: "In transit",
-    trend: "↑ 2",
-    trendLabel: "from yesterday",
+    subtitle: "Lifetime orders",
     icon: PackagePlus,
     iconBgColor: "bg-blue-50",
     iconColor: "text-blue-600"
@@ -54,29 +51,16 @@ export const buyerStats = [
   {
     title: "Total Spent",
     value: "₹4.2L",
-    subtitle: "This month",
-    trend: "↓ 5%",
-    trendLabel: "vs last month",
+    subtitle: "Lifetime spent",
     icon: IndianRupee,
     iconBgColor: "bg-green-50",
     iconColor: "text-green-600"
   },
   {
-    title: "Saved Farmers",
-    value: "28",
-    subtitle: "Verified contacts",
-    trend: "↑ 4",
-    trendLabel: "new this week",
-    icon: Users,
-    iconBgColor: "bg-purple-50",
-    iconColor: "text-purple-600"
-  },
-  {
-    title: "Market Deals",
-    value: "12",
-    subtitle: "Price drops today",
-    trendLabel: "View deals",
-    icon: TrendingUp,
+    title: "Items in Cart",
+    value: "3",
+    subtitle: "Pending checkout",
+    icon: ShoppingBag,
     iconBgColor: "bg-orange-50",
     iconColor: "text-orange-500"
   }
@@ -201,8 +185,12 @@ export const allMarketPrices = [
 export const storageFacilities = [
   { name: 'Green Valley Cold Storage', location: 'Sector 12, Noida, Uttar Pradesh • 5 km', rating: 4.8, reviews: 104, capacity: '1000 MT', available: '750 MT', price: '₹25/MT/day', tags: ['Temperature Control', 'Humidity Control', '24/7 Security', '+1 more'], availability: 'High Availability', availColor: 'text-green-600 bg-green-50 border-green-200' },
   { name: 'FreshKeep Storage Solutions', location: 'Khanna, Punjab • 12 km', rating: 4.5, reviews: 89, capacity: '1500 MT', available: '200 MT', price: '₹22/MT/day', tags: ['Multi-Chamber', 'Loading Bay', 'Insurance Available', '+1 more'], availability: 'Low Availability', availColor: 'text-red-600 bg-red-50 border-red-200' },
-  { name: 'Agri-Cool Storage', location: 'Faridabad, Haryana • 15 km', rating: 4.9, reviews: 201, capacity: '800 MT', available: '400 MT', price: '₹30/MT/day', tags: ['Eco-Friendly', 'Quick Unload', 'Pest Control', '+1 more'], availability: 'High Availability', availColor: 'text-green-600 bg-green-50 border-green-200' },
-  { name: 'Polar Storage Pvt Ltd', location: 'Gurugram, HR • 22 km', rating: 4.7, reviews: 145, capacity: '2000 MT', available: '1000 MT', price: '₹28/MT/day', tags: ['Bulk Storage', 'Cold Chain', 'Transport', '+2 more'], availability: 'Medium Availability', availColor: 'text-orange-600 bg-orange-50 border-orange-200' }
+  { name: 'Agri-Cool Storage', location: 'Faridabad, Haryana • 15 km', rating: 4.9, reviews: 201, capacity: '800 MT', available: '400 MT', price: '₹30/MT/day', tags: ['Eco-Friendly', 'Quick Unload', 'Pest Control', '+1 more'], availability: 'High Availability', text: 'text-green-600 bg-green-50 border-green-200' },
+  { name: 'Polar Storage Pvt Ltd', location: 'Gurugram, HR • 22 km', rating: 4.7, reviews: 145, capacity: '2000 MT', available: '1000 MT', price: '₹28/MT/day', tags: ['Bulk Storage', 'Cold Chain', 'Transport', '+2 more'], availability: 'Medium Availability', availColor: 'text-orange-600 bg-orange-50 border-orange-200' },
+  { name: 'Himalaya Cold Chain', location: 'Vashi APMC, Mumbai • 8 km', rating: 4.6, reviews: 312, capacity: '5000 MT', available: '1200 MT', price: '₹35/MT/day', tags: ['Export Ready', '24/7 Access', 'Packaging', '+3 more'], availability: 'Medium Availability', availColor: 'text-orange-600 bg-orange-50 border-orange-200' },
+  { name: 'Kisan Mitra Storages', location: 'Nashik, Maharashtra • 3 km', rating: 4.2, reviews: 56, capacity: '500 MT', available: '450 MT', price: '₹18/MT/day', tags: ['Farmer Cooperative', 'Low Cost', 'Basic Storage'], availability: 'High Availability', availColor: 'text-green-600 bg-green-50 border-green-200' },
+  { name: 'SafeCrop Godowns', location: 'Indore, MP • 18 km', rating: 4.4, reviews: 78, capacity: '1200 MT', available: '0 MT', price: '₹20/MT/day', tags: ['Grain Storage', 'Ventilated', 'Pest Control'], availability: 'Full', availColor: 'text-red-600 bg-red-50 border-red-200' },
+  { name: 'Apex Freezers', location: 'Kolkata, WB • 10 km', rating: 4.8, reviews: 190, capacity: '3000 MT', available: '800 MT', price: '₹40/MT/day', tags: ['Deep Freeze', 'Perishables', 'Backup Generator'], availability: 'Medium Availability', availColor: 'text-orange-600 bg-orange-50 border-orange-200' },
 ];
 
 export const marketplaceProducts = [
@@ -226,22 +214,22 @@ export const valueAdditionTutorials = {
       title: "Tomato Ketchup & Sauce",
       description: "Learn the commercial process of making high-quality tomato ketchup and sauce. Highly profitable with long shelf life.",
       articles: [
-        { title: "Recipe & Preservatives Guide", link: "#" },
-        { title: "FSSAI Licensing for Sauces", link: "#" }
+        { title: "Recipe & Preservatives Guide", link: "https://en.wikipedia.org/wiki/Ketchup" },
+        { title: "FSSAI Licensing for Sauces", link: "https://fssai.gov.in/" }
       ],
       videos: [
-        { title: "Commercial Ketchup Making Process", duration: "12:45", id: "ketchup-video-1" }
+        { title: "Commercial Ketchup Making Process", duration: "12:45", id: "ketchup-video-1", link: "https://www.youtube.com/watch?v=Jm2B78a8mE8" }
       ]
     },
     {
       title: "Sun-Dried Tomatoes",
       description: "A premium product with high export demand. Easy to make with basic dehydrators or sun drying methods.",
       articles: [
-        { title: "Best Dehydrators for Farmers", link: "#" },
-        { title: "Packaging for Export", link: "#" }
+        { title: "Best Dehydrators for Farmers", link: "https://en.wikipedia.org/wiki/Food_dehydrator" },
+        { title: "Packaging for Export", link: "https://www.fao.org/3/t0073e/T0073E05.htm" }
       ],
       videos: [
-        { title: "How to Make Sun-Dried Tomatoes", duration: "08:20", id: "sundried-video-1" }
+        { title: "How to Make Sun-Dried Tomatoes", duration: "08:20", id: "sundried-video-1", link: "https://www.youtube.com/watch?v=zU4pU_M3xVw" }
       ]
     }
   ],

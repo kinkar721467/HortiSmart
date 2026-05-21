@@ -1,8 +1,46 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Leaf, Globe, TrendingUp, Building2, ShoppingCart, Users, BarChart2, MessageSquare, Shield, Star, ArrowRight } from 'lucide-react';
 
 const HomePage = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    const role = localStorage.getItem('userRole') || sessionStorage.getItem('userRole');
+    if (token) {
+      setIsLoggedIn(true);
+      setUserRole(role);
+    }
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+      await fetch('http://127.0.0.1:8000/api/logout', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json'
+        }
+      });
+    } catch (err) {
+      console.error(err);
+    } finally {
+      localStorage.removeItem('token');
+      localStorage.removeItem('userRole');
+      localStorage.removeItem('userName');
+      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('userRole');
+      sessionStorage.removeItem('userName');
+      setIsLoggedIn(false);
+      setUserRole(null);
+      navigate('/');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white font-sans text-gray-800">
       
@@ -33,12 +71,25 @@ const HomePage = () => {
               <a href="#benefits" className="text-green-50 hover:text-white font-medium text-sm transition-colors">Benefits</a>
               <a href="#testimonials" className="text-green-50 hover:text-white font-medium text-sm transition-colors">Testimonials</a>
               <div className="flex items-center space-x-4">
-                <Link to="/login" className="text-white border border-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors">
-                  Login
-                </Link>
-                <Link to="/signup" className="bg-white text-[#2e7d32] px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors shadow-sm">
-                  Get Started
-                </Link>
+                {isLoggedIn ? (
+                  <>
+                    <Link to={userRole === 'farmer' ? '/dashboard' : '/buyer-dashboard'} className="text-white border border-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors">
+                      Dashboard
+                    </Link>
+                    <button onClick={handleLogout} className="bg-white text-[#2e7d32] px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors shadow-sm">
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link to="/login" className="text-white border border-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors">
+                      Login
+                    </Link>
+                    <Link to="/signup" className="bg-white text-[#2e7d32] px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors shadow-sm">
+                      Get Started
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -74,8 +125,8 @@ const HomePage = () => {
               </p>
               
               <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 mb-12">
-                <Link to="/signup" className="bg-[#f97316] text-white px-6 py-3 rounded-lg font-medium hover:bg-orange-600 transition-colors flex items-center justify-center">
-                  Get Started <ArrowRight className="w-4 h-4 ml-2" />
+                <Link to={isLoggedIn ? (userRole === 'farmer' ? '/dashboard' : '/buyer-dashboard') : '/signup'} className="bg-[#f97316] text-white px-6 py-3 rounded-lg font-medium hover:bg-orange-600 transition-colors flex items-center justify-center">
+                  {isLoggedIn ? 'Go to Dashboard' : 'Get Started'} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
                 <Link to="/prices" className="bg-white border border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center justify-center">
                   Explore Live Mandi
@@ -257,8 +308,8 @@ const HomePage = () => {
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Transform Your Farming Business?</h2>
           <p className="text-green-50 text-lg mb-10">Join thousands of farmers already using HortiSmart to increase their profits</p>
-          <Link to="/signup" className="inline-block bg-white text-[#2e7d32] font-bold px-8 py-4 rounded-xl shadow-lg hover:bg-gray-50 transition-colors">
-            Get Started Free
+          <Link to={isLoggedIn ? (userRole === 'farmer' ? '/dashboard' : '/buyer-dashboard') : '/signup'} className="inline-block bg-white text-[#2e7d32] font-bold px-8 py-4 rounded-xl shadow-lg hover:bg-gray-50 transition-colors">
+            {isLoggedIn ? 'Go to Dashboard' : 'Get Started Free'}
           </Link>
         </div>
       </div>

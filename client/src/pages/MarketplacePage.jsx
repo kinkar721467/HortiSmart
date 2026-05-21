@@ -1,16 +1,55 @@
-import React, { useState } from 'react';
-import { Search, Filter, ShoppingCart, Star, Plus, X, Package } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, Filter, ShoppingCart, Star, Plus, X, Package, Trash2 } from 'lucide-react';
 import { marketplaceProducts } from '../data/mockData';
+import { useToast } from '../context/ToastContext';
 
 const MarketplacePage = () => {
+  const { showToast } = useToast();
   // Get role from authentication
-  const role = (localStorage.getItem('userRole') || 'Buyer').toLowerCase();
+  const role = (localStorage.getItem('userRole') || sessionStorage.getItem('userRole') || 'Buyer').toLowerCase();
+  const userName = localStorage.getItem('userName') || sessionStorage.getItem('userName') || 'Farmer';
 
   
   // Products state initialized with mock data
   const [products, setProducts] = useState(marketplaceProducts);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+      if (!token) return;
+
+      const res = await fetch('http://127.0.0.1:8000/api/products', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const mappedProducts = data.map(p => ({
+          id: p.id,
+          name: p.name,
+          desc: p.description || '',
+          seller: p.user ? `${p.user.name} • ${p.user.location || 'India'}` : 'Local Farmer',
+          rating: 5.0,
+          category: p.category,
+          price: `₹${p.price}`,
+          unit: `/${p.unit}`,
+          available: `${p.available_qty} ${p.unit} available`,
+          icon: p.icon || '📦',
+          rawUserName: p.user ? p.user.name : ''
+        }));
+        setProducts([...mappedProducts, ...marketplaceProducts]);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
   
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -26,23 +65,75 @@ const MarketplacePage = () => {
     icon: '📦'
   });
 
-  const handleAddProduct = (e) => {
+  const handleAddProduct = async (e) => {
     e.preventDefault();
-    const productToAdd = {
-      ...newProduct,
-      price: `₹${newProduct.price}`,
-      unit: '/kg',
-      available: `${newProduct.available} kg available`,
-      seller: 'You (Local Farmer)', // Mocking current farmer details
-      rating: 5.0,
-      desc: `${newProduct.desc} | Storage: ${newProduct.storage}`
-    };
-    
-    setProducts([productToAdd, ...products]);
-    setIsModalOpen(false);
-    setNewProduct({
-      name: '', desc: '', category: 'Vegetables', price: '', available: '', storage: '', icon: '📦'
-    });
+    try {
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+      const res = await fetch('http://127.0.0.1:8000/api/products', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          name: newProduct.name,
+          description: `${newProduct.desc} | Storage: ${newProduct.storage}`,
+          price: newProduct.price,
+          unit: 'kg',
+          available_qty: newProduct.available,
+          category: newProduct.category,
+          icon: newProduct.icon
+        })
+      });
+      if (res.ok) {
+        showToast('Product successfully listed in marketplace!', 'success');
+        fetchProducts();
+        setIsModalOpen(false);
+        setNewProduct({
+          name: '', desc: '', category: 'Vegetables', price: '', available: '', storage: '', icon: '📦'
+        });
+      } else {
+        const errData = await res.json();
+        showToast('Error adding product: ' + errData.message, 'error');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('Network error while adding product.', 'error');
+    }
+  };
+
+  const handleDeleteProduct = async (productId) => {
+    if (!productId) {
+      showToast("Cannot delete this mock item.", "warning");
+      return;
+    }
+    if (!window.confirm("Are you sure you want to remove this product?")) return;
+
+    try {
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+      const res = await fetch(`http://127.0.0.1:8000/api/products/${productId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (res.ok) {
+        setProducts(prev => prev.filter(p => p.id !== productId));
+        showToast('Product successfully removed from marketplace!', 'success');
+      } else {
+        showToast('Failed to delete product.', 'error');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('Network error while deleting product.', 'error');
+    }
+  };
+
+  const handleAddToCart = (product) => {
+    let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    cart.push(product);
+    localStorage.setItem('cart', JSON.stringify(cart));
+    showToast(`${product.name} added to cart!`, 'success');
   };
 
   const filteredProducts = products.filter(product => {
@@ -110,8 +201,8 @@ const MarketplacePage = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {filteredProducts.map((product, idx) => (
           <div key={idx} className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow group flex flex-col">
-            <div className="h-48 bg-[#f4f7f4] flex items-center justify-center relative">
-              <span className="text-6xl group-hover:scale-110 transition-transform">{product.icon}</span>
+            <div className="h-32 bg-[#f4f7f4] flex items-center justify-center relative">
+              <span className="text-4xl group-hover:scale-110 transition-transform">{product.icon}</span>
             </div>
             
             <div className="p-4 flex-1 flex flex-col">
@@ -138,16 +229,23 @@ const MarketplacePage = () => {
                 </div>
                 
                 {/* Conditional Action Button based on Role */}
-                {role === 'buyer' ? (
-                  <button className="w-full flex items-center justify-center space-x-2 bg-green-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition-colors">
+                {role.toLowerCase() === 'buyer' ? (
+                  <button onClick={() => handleAddToCart(product)} className="w-full flex items-center justify-center space-x-2 bg-green-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition-colors">
                     <ShoppingCart className="w-4 h-4" />
-                    <span>Buy Now</span>
+                    <span>Add to Cart</span>
                   </button>
                 ) : (
-                  <button className="w-full flex items-center justify-center space-x-2 bg-gray-100 text-gray-700 py-2 rounded-lg text-sm font-medium border border-gray-200 hover:bg-gray-200 transition-colors cursor-default">
-                    <Package className="w-4 h-4" />
-                    <span>Listed by Farmer</span>
-                  </button>
+                  <div className="flex space-x-2">
+                    <button className="flex-1 flex items-center justify-center space-x-2 bg-gray-100 text-gray-700 py-2 rounded-lg text-sm font-medium border border-gray-200 hover:bg-gray-200 transition-colors cursor-default">
+                      <Package className="w-4 h-4" />
+                      <span>Listed by Farmer</span>
+                    </button>
+                    {product.rawUserName === userName && (
+                      <button onClick={() => handleDeleteProduct(product.id)} className="px-3 flex items-center justify-center bg-red-50 text-red-600 border border-red-100 rounded-lg hover:bg-red-100 transition-colors" title="Remove Product">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
                 )}
               </div>
             </div>

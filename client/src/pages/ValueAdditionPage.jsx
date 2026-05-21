@@ -79,7 +79,7 @@ const ValueAdditionPage = () => {
                       <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Video Tutorials</h4>
                       <div className="space-y-3">
                         {tutorial.videos.map((vid, vIdx) => (
-                          <div key={vIdx} className="flex items-center p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer group">
+                          <div key={vIdx} onClick={() => vid.link ? window.open(vid.link, '_blank') : null} className="flex items-center p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer group">
                             <div className="bg-red-100 text-red-600 p-2 rounded-lg mr-4 group-hover:bg-red-600 group-hover:text-white transition-colors">
                               <PlayCircle className="w-5 h-5" />
                             </div>
@@ -100,7 +100,7 @@ const ValueAdditionPage = () => {
                       <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 mt-4">Related Articles</h4>
                       <div className="space-y-2">
                         {tutorial.articles.map((art, aIdx) => (
-                          <a key={aIdx} href={art.link} className="flex items-start p-3 border border-gray-100 rounded-xl hover:border-green-200 hover:bg-green-50 transition-colors group">
+                          <a key={aIdx} href={art.link} target="_blank" rel="noopener noreferrer" className="flex items-start p-3 border border-gray-100 rounded-xl hover:border-green-200 hover:bg-green-50 transition-colors group">
                             <FileText className="w-4 h-4 text-green-600 mr-3 mt-0.5 shrink-0" />
                             <span className="text-sm text-gray-700 font-medium group-hover:text-green-700 flex-1">{art.title}</span>
                             <ExternalLink className="w-3.5 h-3.5 text-gray-400 group-hover:text-green-600 shrink-0 mt-0.5" />
@@ -116,21 +116,6 @@ const ValueAdditionPage = () => {
         </div>
       )}
 
-      {/* Bottom Banner */}
-      <div className="bg-green-600 rounded-2xl p-8 text-white shadow-md flex flex-col md:flex-row items-center justify-between">
-        <div className="mb-6 md:mb-0">
-          <h3 className="text-xl font-bold mb-2">Need Help Getting Started?</h3>
-          <p className="text-green-50">Our experts can guide you through the entire process from setup to market sales.</p>
-        </div>
-        <div className="flex space-x-4 shrink-0">
-          <button className="bg-white text-green-700 px-6 py-2.5 rounded-lg font-semibold text-sm hover:bg-green-50 transition-colors shadow-sm">
-            Schedule Consultation
-          </button>
-          <button className="bg-transparent border border-white text-white px-6 py-2.5 rounded-lg font-semibold text-sm hover:bg-white/10 transition-colors">
-            Download Guide
-          </button>
-        </div>
-      </div>
     </div>
   );
 };

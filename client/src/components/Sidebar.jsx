@@ -14,14 +14,18 @@ const Sidebar = ({ isMinimized, closeMobile }) => {
   }, []);
 
   let menuItems = sidebarData.menuItems;
-  if (role === 'Buyer') menuItems = buyerMenuItems;
-  if (role === 'Admin') menuItems = adminMenuItems;
+  if (role.toLowerCase() === 'buyer') menuItems = buyerMenuItems;
+  if (role.toLowerCase() === 'admin') menuItems = adminMenuItems;
 
   const { bottomItems } = sidebarData;
+  const savedName = localStorage.getItem('userName') || sessionStorage.getItem('userName');
+  
   const user = {
-    name: role === 'Admin' ? 'System Admin' : role === 'Buyer' ? 'Demo Buyer' : 'Demo Farmer',
+    name: savedName || (role === 'Admin' ? 'System Admin' : role === 'Buyer' ? 'Buyer' : 'Farmer'),
     role: role,
-    initials: role === 'Admin' ? 'SA' : role === 'Buyer' ? 'DB' : 'DF'
+    initials: savedName 
+      ? savedName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() 
+      : (role === 'Admin' ? 'SA' : role === 'Buyer' ? 'B' : 'F')
   };
 
   const sidebarWidth = isMinimized ? 'w-20' : 'w-64';
@@ -95,7 +99,16 @@ const Sidebar = ({ isMinimized, closeMobile }) => {
           <NavLink
             key={item.name}
             to={item.path}
-            onClick={closeMobile}
+            onClick={(e) => {
+              if (item.name === 'Logout') {
+                e.preventDefault();
+                localStorage.clear();
+                sessionStorage.clear();
+                window.location.href = '/';
+              } else if (closeMobile) {
+                closeMobile();
+              }
+            }}
             className={({ isActive }) => `
               w-full flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors group
               ${isActive ? 'bg-green-600 text-white' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}
